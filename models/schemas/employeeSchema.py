@@ -8,4 +8,3 @@ class EmployeeSchema(ma.Schema):
 
 employee_schema = EmployeeSchema()
 employees_schema = EmployeeSchema(many=True)
-

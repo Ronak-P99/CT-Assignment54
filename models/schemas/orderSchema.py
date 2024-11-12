@@ -1,12 +1,20 @@
-from marshmallow import fields, validate
+from marshmallow import fields
 from schema import ma
 
 class OrderSchema(ma.Schema):
     id = fields.Integer(required=False)
-    quantity = fields.Integer(required=True)
-    total_price = fields.Float(required=True, validate=validate.Range(min=0))
+    date = fields.Date(required=True)
     customer_id = fields.Integer(required=True)
-    product_id = fields.Integer(required=True)
+    products = fields.Nested('ProductSchemaId', many=True)
+
+class OrderSchemaCustomer(ma.Schema):
+    id = fields.Integer(required=False)
+    date = fields.Date(required=True)
+    customer = fields.Nested('CustomerSchema')
+    products = fields.Nested('ProductSchema', many=True)
+
+order_schema_customer = OrderSchemaCustomer()
+
 
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)

@@ -10,4 +10,4 @@ class Production(Base):
     product_id: Mapped[int] = mapped_column(db.ForeignKey('Products.id'))
     date_produced: Mapped[datetime.date] = mapped_column(db.Date, nullable=False)
     
-    product: Mapped["Products"] = db.relationship(back_populates="Productions")
+    product: Mapped["Product"] = db.relationship(back_populates="production")

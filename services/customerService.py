@@ -17,7 +17,17 @@ def save(customer_data):
             with session.begin():
                 new_customer = Customer(name=customer_data['name'], email=customer_data['email'], phone=customer_data['phone'])
                 session.add(new_customer)
-                session.commit() 
+
+                try:
+                    # Do query / transaction here
+                    # Start a nested transaction and stablish a savepoint
+                    savepoint = session.begin_nested()
+                    new_nested_customer = Customer(name=customer_data['name'], email=customer_data['email'], phone=customer_data['phone'])
+                    session.add(new_nested_customer)
+                except:
+                    # Rollback the nested transaction to the savepoint
+                    savepoint.rollback()
+
             session.refresh(new_customer)
             return new_customer
         
@@ -27,4 +37,14 @@ def save(customer_data):
 def find_all():
     query = select(Customer)
     customers = db.session.execute(query).scalars().all()
+    return customers
+
+def find_customers_gmail():
+    query = select(Customer).where(Customer.email.like("%gmail%"))
+    customers = db.session.execute(query).scalars().all()
+
+    return customers
+
+def find_all_pagination(page=1, per_page=10):
+    customers = db.paginate(select(Customer), page=page, per_page=per_page)
     return customers
