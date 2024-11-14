@@ -7,6 +7,7 @@ class ProductionSchema(ma.Schema):
     quantity_produced = fields.Integer(required=True)
     date_produced = fields.Date(required=True)
     product_id = fields.Integer(required=True)
+    emplyee_name = fields.String(required=True)
 
 production_schema = ProductionSchema()
 productions_schema = ProductionSchema(many=True)

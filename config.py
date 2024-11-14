@@ -1,4 +1,4 @@
 class DevelopmentConfig:
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/advanced_e_commerce_db'
+    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:Mario101299@localhost/advanced_e_commerce_db'
     CACHE_TYPE = 'SimpleCache'
     DEBUG = True

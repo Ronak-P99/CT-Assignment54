@@ -22,3 +22,7 @@ def save():
 def find_all():
     productions = productionService.find_all()
     return productions_schema.jsonify(productions), 200
+
+def get_production_dates():
+    result = productionService.get_production_dates()
+    return jsonify(result), 200

@@ -4,6 +4,7 @@ from services import employeeService
 from marshmallow import ValidationError
 from caching import cache
 
+
 def save():
     # Post Request. /employees POST contain JSON
     try:
@@ -22,3 +23,11 @@ def save():
 def find_all():
     employees = employeeService.find_all()
     return employees_schema.jsonify(employees), 200
+
+def get_production():
+    result = employeeService.get_production()
+    return jsonify(result), 200
+
+
+
+

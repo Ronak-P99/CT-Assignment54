@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
 from database import db
 from models.product import Product
-from sqlalchemy import select
-
-
+from sqlalchemy import select, func
+from models.order import Order
 def save(product_data):
     with Session(db.engine) as session:
         with session.begin():
@@ -21,3 +20,13 @@ def find_all():
     query = select(Product)
     products = db.session.execute(query).scalars().all()
     return products
+
+def get_max_orders():
+   # Query to calculate total production per employee
+    results = db.session.query(
+        Product.name,
+        func.sum(Product.quantity_ordered).label('total_quantity_ordered')
+    ).join(Order, Order.id == Product.order_id) \
+    .group_by(Product.name).order_by(func.sum(Product.quantity_ordered).desc()).all()
+
+    return [{'product_name': name, 'total_quantity_ordered': total} for name, total in results]

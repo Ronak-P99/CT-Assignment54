@@ -2,7 +2,9 @@ from sqlalchemy.orm import Session
 from database import db
 from models.customer import Customer
 from circuitbreaker import circuit
-from sqlalchemy import select
+from sqlalchemy import select, func
+from models.product import Product
+from models.order import Order
 
 def fallback_function(customer):
     return None
@@ -48,3 +50,25 @@ def find_customers_gmail():
 def find_all_pagination(page=1, per_page=10):
     customers = db.paginate(select(Customer), page=page, per_page=per_page)
     return customers
+
+def get_customers_orders():
+    results = db.session.query(
+        Customer.name,
+        func.sum(Product.price).label('total_price_ordered')
+    ).join(Order, Order.id == Product.order_id) \
+    .group_by(Customer.name).order_by(func.sum(Product.price).having(Product.price > 5)).all()
+
+    return [{'customer_name': name, 'total_price_ordered': total} for name, total in results]
+
+def get_customers_orders():
+    results = db.session.query(
+        Customer.name,
+        func.sum(Product.price).label('total_price_ordered')
+    ).join(Order, Customer.id == Order.customer_id).join(Product, Order.id == Product.order_id) \
+    .group_by(Customer.name) \
+    .having(func.sum(Product.price) > 5) \
+    .order_by(func.sum(Product.price).desc()) \
+    .all()
+
+    return [{'customer_name': name, 'total_price_ordered': total} for name, total in results]
+

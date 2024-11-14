@@ -11,6 +11,6 @@ class Customer(Base):
     phone: Mapped[str] = mapped_column(db.String(15))
     # One-to-one: Customer and CustomerAccount
     customer_account: Mapped["CustomerAccount"] = db.relationship(back_populates="customer")
-    orders: Mapped[List["Order"]] = db.relationship(back_populates="customer")
+    order: Mapped[List["Order"]] = db.relationship(back_populates="customer")
     
     

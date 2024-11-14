@@ -6,3 +6,5 @@ class Employee(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(db.String(100), nullable=False)
     position: Mapped[str] = mapped_column(db.String(100), nullable=False)
+
+    production: Mapped["Production"] = db.relationship(back_populates="employee")

@@ -46,10 +46,6 @@ def blue_print_config(app):
     app.register_blueprint(employee_bluprint, url_prefix='/employees')
 
 
-
-
-
-
 def configure_rate_limit():
     limiter.limit("5 per day")(customer_bluprint)
 
@@ -67,19 +63,36 @@ def init_customers_info_data():
                 CustomerAccount(username="ctm3", password="password3",customer_id=3),
             ]
             products = [
-                Product(name="Product One", price=9.99),
-                Product(name="Product Two", price=12.99),
-                Product(name="Product Three", price=10.99),
+                Product(name="Product One", price=9.99,quantity_ordered=2, order_id=1),
+                Product(name="Product Two", price=1.99, quantity_ordered=3, order_id=2),
+                Product(name="Product Three", price=10.99, quantity_ordered=3, order_id=3),
             ]
             orders = [
                 Order(date="1234-11-12", customer_id=1),
                 Order(date="1234-11-13", customer_id=2),
                 Order(date="1234-11-14", customer_id=3),
             ]
+            employees = [
+                Employee(name="Employee One", position="Position One"),
+                Employee(name="Employee Two", position="Position Two"),
+                Employee(name="Employee Three", position="Position Three"),
+            ]
+            productions = [
+                Production(name="Production One", quantity_produced=1, product_id=1, employee_id=1, date="1234-11-12"),
+                Production(name="Production four", quantity_produced=3, product_id=1, employee_id=1, date="1234-11-12"),
+                Production(name="Production six", quantity_produced=4, product_id=1, employee_id=2, date="1234-11-12"),
+
+                Production(name="Production Two", quantity_produced=2, product_id=2, employee_id=2, date="1234-11-13"),
+                Production(name="Production Three", quantity_produced=8, product_id=3, employee_id=3, date="1234-11-14"),
+            ]
             session.add_all(customers)
             session.add_all(customersAccounts)
             session.add_all(products)
             session.add_all(orders)
+            session.add_all(employees)
+            session.add_all(productions)
+
+
 
 
 if __name__ == '__main__':

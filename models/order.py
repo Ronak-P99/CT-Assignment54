@@ -10,5 +10,6 @@ class Order(Base):
     date: Mapped[datetime.date] = mapped_column(db.Date, nullable=False)
     customer_id: Mapped[int] = mapped_column(db.ForeignKey('Customers.id'))
 
-    customer: Mapped["Customer"] = db.relationship(back_populates="orders")
-    product: Mapped[List["Product"]] = db.relationship(secondary=order_product)
+    customer: Mapped["Customer"] = db.relationship(back_populates="order")
+    # product: Mapped[List["Product"]] = db.relationship(secondary=order_product)
+    product: Mapped["Product"] = db.relationship(back_populates="order")

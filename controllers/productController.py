@@ -27,3 +27,7 @@ def find_all_pagination():
 def find_all():
     products = productService.find_all()
     return products_schema.jsonify(products), 200
+
+def get_max_orders():
+    result = productService.get_max_orders()
+    return jsonify(result), 200

@@ -2,7 +2,9 @@ from sqlalchemy.orm import Session
 from database import db
 from models.employee import Employee
 from circuitbreaker import circuit
-from sqlalchemy import select
+from sqlalchemy import select, func
+from models.production import Production
+from models.product import Product
 
 def fallback_function(employee):
     return None
@@ -20,7 +22,7 @@ def save(employee_data):
                 session.commit() 
             session.refresh(new_employee)
             return new_employee
-        
+        # Create a new static function
     except Exception as e:
            raise e
 
@@ -28,3 +30,27 @@ def find_all():
     query = select(Employee)
     employees = db.session.execute(query).scalars().all()
     return employees
+
+def get_production():
+   # Query to calculate total production per employee
+    results = db.session.query(
+        Employee.name,
+        func.sum(Production.quantity_produced).label('total_quantity')
+    ).join(Production, Employee.id == Production.employee_id).join(Product, Production.product_id == Product.id) \
+    .group_by(Employee.name).all()
+    return [{'employee_name': name, 'total_quantity': total} for name, total in results]
+
+# def get_max_production():
+#    # Query to calculate total production per employee
+#     max_value = float('-inf')    
+#     results = db.session.query(
+#         Employee.name,
+#         func.sum(Production.quantity_produced).label('total_quantity')
+#     ).join(Production, Employee.id == Production.employee_id).join(Product, Production.product_id == Product.id) \
+#     .group_by(Product.name).all()
+#     for name, total in results:
+#         if total > max_value:
+#             max_value = total
+#             max_name = name
+
+#     return {'employee_name': max_name, 'total_quantity': max_value} 
