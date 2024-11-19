@@ -4,7 +4,8 @@ from schema import ma
 from limiter import limiter
 from caching import cache
 from sqlalchemy.orm import Session
-
+from werkzeug.security import generate_password_hash
+from flask_cors import CORS
 
 from models.customer import Customer
 from models.customerAccount import CustomerAccount
@@ -12,6 +13,9 @@ from models.order import Order
 from models.product import Product
 from models.production import Production
 from models.employee import Employee
+from models.role import Role
+from models.customerManagementRole import CustomerManagementRole
+from models.user import User
 from models.order_product import order_product
 
 from routes.customerBP import customer_bluprint
@@ -20,7 +24,7 @@ from routes.productBP import product_bluprint
 from routes.customerAccountBP import customer_account_blueprint
 from routes.productionBP import production_bluprint
 from routes.employeeBP import employee_bluprint
-
+from routes.userAccountBP import user_blueprint
 
 
 def create_app(config_name):
@@ -31,6 +35,7 @@ def create_app(config_name):
     ma.init_app(app)
     cache.init_app(app)
     limiter.init_app(app)
+    CORS(app)
 
     return app
 
@@ -44,10 +49,11 @@ def blue_print_config(app):
     app.register_blueprint(customer_account_blueprint, url_prefix='/accounts')
     app.register_blueprint(production_bluprint, url_prefix='/productions')
     app.register_blueprint(employee_bluprint, url_prefix='/employees')
+    app.register_blueprint(user_blueprint, url_prefix='/users')
 
 
-def configure_rate_limit():
-    limiter.limit("5 per day")(customer_bluprint)
+# def configure_rate_limit():
+#     limiter.limit("5 per day")(customer_bluprint)
 
 def init_customers_info_data():
     with Session(db.engine) as session:
@@ -58,9 +64,9 @@ def init_customers_info_data():
                 Customer(name="Customer Three", email="customer3@hotmail.com",phone="092319283"),
             ]
             customersAccounts = [
-                CustomerAccount(username="ctm1", password="password1",customer_id=1),
-                CustomerAccount(username="ctm2", password="password2",customer_id=2),
-                CustomerAccount(username="ctm3", password="password3",customer_id=3),
+                CustomerAccount(username="ctm1", password=generate_password_hash("password1"),customer_id=1),
+                CustomerAccount(username="ctm2", password=generate_password_hash("password2"),customer_id=2),
+                CustomerAccount(username="ctm3", password=generate_password_hash("password3"),customer_id=3),
             ]
             products = [
                 Product(name="Product One", price=9.99,quantity_ordered=2, order_id=1),
@@ -81,9 +87,15 @@ def init_customers_info_data():
                 Production(name="Production One", quantity_produced=1, product_id=1, employee_id=1, date="1234-11-12"),
                 Production(name="Production four", quantity_produced=3, product_id=1, employee_id=1, date="1234-11-12"),
                 Production(name="Production six", quantity_produced=4, product_id=1, employee_id=2, date="1234-11-12"),
-
                 Production(name="Production Two", quantity_produced=2, product_id=2, employee_id=2, date="1234-11-13"),
                 Production(name="Production Three", quantity_produced=8, product_id=3, employee_id=3, date="1234-11-14"),
+            ]
+            users = [
+                User(username="user1", password=generate_password_hash("pass1")),
+                User(username="user2", password=generate_password_hash("pass2")),
+                User(username="user3", password=generate_password_hash("pass3"))
+
+
             ]
             session.add_all(customers)
             session.add_all(customersAccounts)
@@ -91,7 +103,27 @@ def init_customers_info_data():
             session.add_all(orders)
             session.add_all(employees)
             session.add_all(productions)
+            session.add_all(users)
 
+def init_roles_data():
+    with Session(db.engine) as session:
+        with session.begin():
+            roles = [
+                Role(role_name='admin'),
+                Role(role_name='user'),
+                Role(role_name='guest'),
+            ]
+            session.add_all(roles)
+
+def init_roles_customers_data():
+    with Session(db.engine) as session:
+        with session.begin():
+            roles_customers = [
+                CustomerManagementRole(customer_management_id=1, user_management_id=1, role_id=1),
+                CustomerManagementRole(customer_management_id=2, user_management_id=2, role_id=2),
+                CustomerManagementRole(customer_management_id=3, user_management_id=3, role_id=3)
+            ]
+            session.add_all(roles_customers)
 
 
 
@@ -99,11 +131,13 @@ if __name__ == '__main__':
     app = create_app('DevelopmentConfig')
 
     blue_print_config(app)
-    configure_rate_limit()
+    # configure_rate_limit()
 
     with app.app_context():
         db.drop_all()
         db.create_all()
+        init_roles_data()
         init_customers_info_data()
+        init_roles_customers_data()
 
     app.run(debug=True)
