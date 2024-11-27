@@ -25,7 +25,18 @@ from routes.customerAccountBP import customer_account_blueprint
 from routes.productionBP import production_bluprint
 from routes.employeeBP import employee_bluprint
 from routes.userAccountBP import user_blueprint
+from flask_swagger_ui import get_swaggerui_blueprint
 
+SWAGGER_URL = '/api/docs' # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/static/swagger.yaml'
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "E Commerce API"
+    }
+)
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -51,6 +62,7 @@ def blue_print_config(app):
     app.register_blueprint(production_bluprint, url_prefix='/productions')
     app.register_blueprint(employee_bluprint, url_prefix='/employees')
     app.register_blueprint(user_blueprint, url_prefix='/users')
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 
 # def configure_rate_limit():

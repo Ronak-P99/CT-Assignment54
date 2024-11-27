@@ -16,7 +16,7 @@ def save(production_data):
         
         with Session(db.engine) as session:
             with session.begin():
-                new_production = Production(name=production_data['name'], quantity_produced=production_data['quantity_produced'], product_id=production_data['product_id'], employee_id=production_data['employee_id'], date_produced=production_data['date_produced'])
+                new_production = Production(name=production_data['name'], quantity_produced=production_data['quantity_produced'], product_id=production_data['product_id'], employee_id=production_data['employee_id'], date=production_data['date'])
                 session.add(new_production)
                 session.commit() 
             session.refresh(new_production)

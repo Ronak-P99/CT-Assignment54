@@ -19,11 +19,11 @@ def save(customer_data):
             with session.begin():
                 new_customer = Customer(name=customer_data['name'], email=customer_data['email'], phone=customer_data['phone'])
                 session.add(new_customer)
+                savepoint = session.begin_nested()
 
                 try:
                     # Do query / transaction here
                     # Start a nested transaction and stablish a savepoint
-                    savepoint = session.begin_nested()
                     new_nested_customer = Customer(name=customer_data['name'], email=customer_data['email'], phone=customer_data['phone'])
                     session.add(new_nested_customer)
                 except:
@@ -51,14 +51,14 @@ def find_all_pagination(page=1, per_page=10):
     customers = db.paginate(select(Customer), page=page, per_page=per_page)
     return customers
 
-def get_customers_orders():
-    results = db.session.query(
-        Customer.name,
-        func.sum(Product.price).label('total_price_ordered')
-    ).join(Order, Order.id == Product.order_id) \
-    .group_by(Customer.name).order_by(func.sum(Product.price).having(Product.price > 5)).all()
+# def get_customers_orders():
+#     results = db.session.query(
+#         Customer.name,
+#         func.sum(Product.price).label('total_price_ordered')
+#     ).join(Order, Order.id == Product.order_id) \
+#     .group_by(Customer.name).order_by(func.sum(Product.price).having(Product.price > 5)).all()
 
-    return [{'customer_name': name, 'total_price_ordered': total} for name, total in results]
+#     return [{'customer_name': name, 'total_price_ordered': total} for name, total in results]
 
 def get_customers_orders():
     results = db.session.query(

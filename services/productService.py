@@ -6,7 +6,7 @@ from models.order import Order
 def save(product_data):
     with Session(db.engine) as session:
         with session.begin():
-            new_product = Product(name=product_data['name'], price=product_data['price'])
+            new_product = Product(name=product_data['name'], price=product_data['price'], quantity_ordered=product_data['quantity_ordered'], order_id=product_data['order_id'])
             session.add(new_product)
             session.commit() 
         session.refresh(new_product)
