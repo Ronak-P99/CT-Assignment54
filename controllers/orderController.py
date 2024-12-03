@@ -18,6 +18,31 @@ def save():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
+def update(id):
+    try:
+        # Validate and deserialize input
+        order_data = order_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+    
+    order_save = orderService.update(id, order_data)
+    if order_save is not None:
+        return order_schema.jsonify(order_save), 201
+    else:
+        return jsonify({"message":"Fallback method error activated","body":order_data}), 400
+
+def delete(id):
+    try:
+        # Validate and deserialize input
+        result = orderService.delete(id)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+    
+    if result is not None:
+        return jsonify({"message":result}), 201
+    else:
+        return jsonify({"message":"Fallback method error activated","body":result}), 400
+
 def find_by_id(id):
     order = orderService.find_by_id(id)
     return order_schema_customer.jsonify(order), 200

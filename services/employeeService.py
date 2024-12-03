@@ -25,6 +25,35 @@ def save(employee_data):
         # Create a new static function
     except Exception as e:
            raise e
+    
+def find_by_id(id):
+    query = select(Employee).where(Employee.id == id)
+    employee = db.session.execute(query).scalar_one_or_none()
+    return employee
+
+def update(id, employee_data):
+    employee = find_by_id(id)
+           
+    if not employee:
+        raise ValueError(f"employee with ID {id} does not exist")
+
+    employee.name = employee_data['username']
+    employee.position = employee_data['position']
+    
+    db.session.commit()
+
+    return employee
+
+def delete(id):
+    employee = find_by_id(id)
+           
+    if not employee:
+        raise ValueError(f"employee with ID {id} does not exist")
+    
+    db.session.delete(employee)
+    db.session.commit()
+
+    return "Successfully deleted"
 
 def find_all():
     query = select(Employee)

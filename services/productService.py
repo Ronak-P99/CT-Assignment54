@@ -3,6 +3,7 @@ from database import db
 from models.product import Product
 from sqlalchemy import select, func
 from models.order import Order
+
 def save(product_data):
     with Session(db.engine) as session:
         with session.begin():
@@ -11,6 +12,37 @@ def save(product_data):
             session.commit() 
         session.refresh(new_product)
         return new_product
+
+def find_by_id(id):
+    query = select(Product).join(Order).where(Order.id == Product.order_id).filter_by(id=id)
+    product = db.session.execute(query).scalar_one_or_none()
+    return product
+
+def update(id, product_data):
+    product = find_by_id(id)
+           
+    if not product:
+        raise ValueError(f"Product with ID {id} does not exist")
+
+    product.name = product_data['name']
+    product.price = product_data['price']
+    product.quantity_ordered = product_data['quantity_ordered']
+    
+    
+    db.session.commit()
+
+    return product
+
+def delete(id):
+    product = find_by_id(id)
+           
+    if not product:
+        raise ValueError(f"Product with ID {id} does not exist")
+    
+    db.session.delete(product)
+    db.session.commit()
+
+    return "Successfully deleted"
         
 def find_all_pagination(page=1, per_page=10):
     products = db.paginate(select(Product), page=page, per_page=per_page)

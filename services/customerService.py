@@ -35,6 +35,36 @@ def save(customer_data):
         
     except Exception as e:
            raise e
+    
+def find_by_id(id):
+    query = select(Customer).where(Customer.id == id)
+    customer = db.session.execute(query).scalar_one_or_none()
+    return customer
+
+def update(id, customer_data):
+    customer = find_by_id(id)
+           
+    if not customer:
+        raise ValueError(f"Customer with ID {id} does not exist")
+
+    customer.name = customer_data['username']
+    customer.email = customer_data['email']
+    customer.phone = customer_data['phone']    
+    
+    db.session.commit()
+
+    return customer
+
+def delete(id):
+    customer = find_by_id(id)
+           
+    if not customer:
+        raise ValueError(f"Customer with ID {id} does not exist")
+    
+    db.session.delete(customer)
+    db.session.commit()
+
+    return "Successfully deleted"
 
 def find_all():
     query = select(Customer)
@@ -51,14 +81,6 @@ def find_all_pagination(page=1, per_page=10):
     customers = db.paginate(select(Customer), page=page, per_page=per_page)
     return customers
 
-# def get_customers_orders():
-#     results = db.session.query(
-#         Customer.name,
-#         func.sum(Product.price).label('total_price_ordered')
-#     ).join(Order, Order.id == Product.order_id) \
-#     .group_by(Customer.name).order_by(func.sum(Product.price).having(Product.price > 5)).all()
-
-#     return [{'customer_name': name, 'total_price_ordered': total} for name, total in results]
 
 def get_customers_orders():
     results = db.session.query(

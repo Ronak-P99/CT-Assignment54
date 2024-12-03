@@ -40,6 +40,29 @@ def find_by_id(id):
     order = db.session.execute(query).scalar_one_or_none()
     return order
 
+def update(id, order_data):
+    order = find_by_id(id)
+           
+    if not order:
+        raise ValueError(f"Order with ID {id} does not exist")
+
+    order.date = order_data['date']    
+    
+    db.session.commit()
+
+    return order
+
+def delete(id):
+    order = find_by_id(id)
+           
+    if not order:
+        raise ValueError(f"Order with ID {id} does not exist")
+    
+    db.session.delete(order)
+    db.session.commit()
+
+    return "Successfully deleted"
+
 def find_all_pagination(page=1, per_page=10):
     orders = db.paginate(select(Order), page=page, per_page=per_page)
     return orders

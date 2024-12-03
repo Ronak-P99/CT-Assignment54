@@ -4,6 +4,7 @@ from models.production import Production
 from circuitbreaker import circuit
 from sqlalchemy import select, func
 from models.product import Product
+from models.employee import Employee
 
 def fallback_function(production):
     return None
@@ -24,6 +25,38 @@ def save(production_data):
         
     except Exception as e:
            raise e
+    
+def find_by_id(id):
+    query = select(Production).join(Product).join(Employee).where(Product.id == Production.product_id and Employee.id == Production.employee_id).filter_by(id=id)
+    production = db.session.execute(query).scalar_one_or_none()
+    return production
+
+def update(id, production_data):
+    production = find_by_id(id)
+           
+    if not production:
+        raise ValueError(f"Production with ID {id} does not exist")
+
+    production.name = production_data['name']
+    production.quantity_produced = production_data['quantity_produced']
+    production.date = production_data['date']
+
+    
+    
+    db.session.commit()
+
+    return production
+
+def delete(id):
+    production = find_by_id(id)
+           
+    if not production:
+        raise ValueError(f"Production with ID {id} does not exist")
+    
+    db.session.delete(production)
+    db.session.commit()
+
+    return "Successfully deleted"
 
 def find_all():
     query = select(Production)

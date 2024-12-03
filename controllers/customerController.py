@@ -18,6 +18,35 @@ def save():
         return customer_schema.jsonify(customer_save), 201
     else:
         return jsonify({"message":"Fallback method error activated","body":customer_data}), 400
+    
+def update(id):
+    try:
+        # Validate and deserialize input
+        customer_data = customer_schema.load(request.json)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+    
+    customer_save = customerService.update(id, customer_data)
+    if customer_save is not None:
+        return customer_schema.jsonify(customer_save), 201
+    else:
+        return jsonify({"message":"Fallback method error activated","body":customer_data}), 400
+
+def delete(id):
+    try:
+        # Validate and deserialize input
+        result = customerService.delete(id)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+    
+    if result is not None:
+        return jsonify({"message":result}), 201
+    else:
+        return jsonify({"message":"Fallback method error activated","body":result}), 400
+
+def find_by_id(id):
+    customer = customerService.find_by_id(id)
+    return customer_schema.jsonify(customer), 200
 
 # @cache.cached(timeout=60)
 @token_required
