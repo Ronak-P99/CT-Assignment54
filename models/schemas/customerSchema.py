@@ -8,7 +8,7 @@ class CustomerSchema(ma.Schema):
     email = fields.String(required=True)
     phone = fields.String(required=True)
 
-    class Mata:
+    class Meta:
         fields = ("id", "name", "email", "phone")
 
 # Create instances of the schemas

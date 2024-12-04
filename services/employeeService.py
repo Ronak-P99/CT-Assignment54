@@ -37,7 +37,7 @@ def update(id, employee_data):
     if not employee:
         raise ValueError(f"employee with ID {id} does not exist")
 
-    employee.name = employee_data['username']
+    employee.name = employee_data['name']
     employee.position = employee_data['position']
     
     db.session.commit()

@@ -1,5 +1,5 @@
 from flask import Blueprint
-from controllers.customerAccountController import find_all, login, save, update, delete, find_by_id
+from controllers.customerAccountController import find_all, save, update, delete, find_by_id, login
 
 customer_account_blueprint = Blueprint('customer_account_bp', __name__)
 customer_account_blueprint.route('/', methods=['POST'])(save)

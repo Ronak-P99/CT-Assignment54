@@ -47,7 +47,7 @@ def update(id, customer_data):
     if not customer:
         raise ValueError(f"Customer with ID {id} does not exist")
 
-    customer.name = customer_data['username']
+    customer.name = customer_data['name']
     customer.email = customer_data['email']
     customer.phone = customer_data['phone']    
     
