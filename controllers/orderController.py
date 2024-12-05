@@ -45,7 +45,7 @@ def delete(id):
 
 def find_by_id(id):
     order = orderService.find_by_id(id)
-    return order_schema_customer.jsonify(order), 200
+    return order_schema.jsonify(order), 200
 
 def find_all_pagination():
     page = request.args.get('page', 1, type=int)

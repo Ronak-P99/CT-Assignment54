@@ -23,7 +23,7 @@ def save(customer_account_data):
             if not customer:
                 raise ValueError(f"Customer with ID {customer_id} does not exist")
             
-            new_customer_account = CustomerAccount(username=customer_account_data['username'], password=generate_password_hash(customer_account_data['password']), customer_id=customer_account_data['customer_id'], customer=customer)
+            new_customer_account = CustomerAccount(username=customer_account_data['username'], password=generate_password_hash(customer_account_data['password']), customer_id=customer_account_data['customer_id'])
             session.add(new_customer_account)
             print("New Customer Account ID (before commit):", new_customer_account.id)
             session.flush()
@@ -31,8 +31,6 @@ def save(customer_account_data):
             session.commit() 
 
         session.refresh(new_customer_account)
-        for customer in new_customer_account.customer:
-            session.refresh(customer)
         return new_customer_account
 
 def find_by_id(id):
@@ -67,7 +65,7 @@ def delete(id):
     
 
 def find_all():
-    query = select(CustomerAccount).join(Customer).where(Customer.id == CustomerAccount.customer_id)
+    query = select(CustomerAccount)
     customer_accounts = db.session.execute(query).scalars().all()
     return customer_accounts
 
@@ -85,5 +83,3 @@ def login_customer(username, password):
             return resp
         else:
             return None
-    else:
-        return None

@@ -7,8 +7,17 @@ from models.order import Order
 def save(product_data):
     with Session(db.engine) as session:
         with session.begin():
+            order_id = product_data['order_id']
+            order = session.execute(select(Order).where(Order.id == order_id)).scalars().first()
+           
+            if not order:
+                raise ValueError(f"Customer with ID {order_id} does not exist")
+            
             new_product = Product(name=product_data['name'], price=product_data['price'], quantity_ordered=product_data['quantity_ordered'], order_id=product_data['order_id'])
             session.add(new_product)
+            print("New Product ID (before commit):", new_product.id)
+            session.flush()
+            print("New Product ID (after commit):", new_product.id)
             session.commit() 
         session.refresh(new_product)
         return new_product

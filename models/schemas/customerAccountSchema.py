@@ -7,7 +7,7 @@ class CustomerAccountSchema(ma.Schema):
     password = fields.String(required=True)
     customer_id = fields.Integer(required=True)
 
-    customer = fields.Nested("CustomerSchema")
+    # customer = fields.Nested("CustomerSchema")
 
 customer_account_schema = CustomerAccountSchema()
 customer_accounts_schema = CustomerAccountSchema(many=True)

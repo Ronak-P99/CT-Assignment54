@@ -10,11 +10,11 @@ from sqlalchemy import select
 def save(order_data):
     with Session(db.engine) as session:
         with session.begin():
-            # product_ids = [product['id'] for product in order_data['products']]
+            # product_ids = order_data['product_id']
             # products = session.execute(select(Product).where(Product.id.in_(product_ids))).scalars().all()
 
             customer_id = order_data['customer_id']
-            customer = session.execute(select(Customer).where(Customer.id.in_(customer_id))).scalars().first()
+            customer = session.execute(select(Customer).where(Customer.id == customer_id)).scalars().first()
             
             # if len(products) != len(product_ids):
             #     raise ValueError("One or more products do not exist")
@@ -31,8 +31,6 @@ def save(order_data):
             session.commit() 
 
         session.refresh(new_order)
-        # for product in new_order.products:
-        #     session.refresh(product)
         return new_order
 
 def find_by_id(id):

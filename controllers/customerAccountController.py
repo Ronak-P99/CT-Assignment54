@@ -1,4 +1,4 @@
-from models.schemas.customerAccountSchema import customer_account_schema
+from models.schemas.customerAccountSchema import customer_account_schema, customer_accounts_schema
 from services import customerAccountService
 from marshmallow import ValidationError
 from flask import jsonify, request
@@ -48,7 +48,7 @@ def find_by_id(id):
     
 def find_all():
     customer_accounts = customerAccountService.find_all()
-    return customer_account_schema.jsonify(customer_accounts), 200
+    return customer_accounts_schema.jsonify(customer_accounts), 200
 
 def login():
     customer = request.json
