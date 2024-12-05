@@ -18,12 +18,12 @@ def save(customer_account_data):
     with Session(db.engine) as session:
         with session.begin():
             customer_id = customer_account_data['customer_id']
-            customer = session.execute(select(Customer).where(Customer.id.in_(customer_id))).scalars().first()
+            customer = session.execute(select(Customer).where(Customer.id == customer_id)).scalars().first()
            
             if not customer:
                 raise ValueError(f"Customer with ID {customer_id} does not exist")
             
-            new_customer_account = CustomerAccount(username=customer_account_data['username'], password=generate_password_hash(customer_account_data['password']), customer_id=customer_account_data['customer_id'])
+            new_customer_account = CustomerAccount(username=customer_account_data['username'], password=generate_password_hash(customer_account_data['password']), customer_id=customer_account_data['customer_id'], customer=customer)
             session.add(new_customer_account)
             print("New Customer Account ID (before commit):", new_customer_account.id)
             session.flush()
@@ -31,7 +31,7 @@ def save(customer_account_data):
             session.commit() 
 
         session.refresh(new_customer_account)
-        for customer in new_customer_account.customers:
+        for customer in new_customer_account.customer:
             session.refresh(customer)
         return new_customer_account
 
